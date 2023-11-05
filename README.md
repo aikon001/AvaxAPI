@@ -1,7 +1,18 @@
-## GeoJson API
+## avax-index-boilerplate
 
-An api for converting Osm data to GeoJson. 
+This repository contains a boilerplate Avax indexer that can be used to index and elaborate the transactions from Avalanche C-Chain. <br/>
 
-### Usage
-Send a GET request to /GeoJson with a bbox params as for ex. : <br/>
-<strong>/api/GeoJson?bbox=15.079157,37.490726,15.085933,37.493599</strong>
+## usage
+
+Start redis
+```
+docker run --name redis -p 6379:6379 redis
+```
+Run the indexer with node as follows :
+```
+ts-node ./src/indexer.ts
+```
+It also implements a web service , run it with :
+```
+ts-node ./src/server.ts
+```

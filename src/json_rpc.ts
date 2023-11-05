@@ -1,4 +1,4 @@
-const axios = require("axios");
+import axios from "axios";
 require('dotenv').config({ path: './.env' })
 
 const url = `https://avalanche-mainnet.infura.io/v3/${process.env.PROJECT_ID}`;

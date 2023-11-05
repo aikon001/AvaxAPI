@@ -1,5 +1,3 @@
-export { }
-
 import express = require('express');
 
 import Service from "./service";
