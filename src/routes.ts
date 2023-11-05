@@ -1,59 +1,48 @@
-export {}
+export { }
 
 import express = require('express');
 
-const Service = require("./service");
+import Service from "./service";
 const router = express.Router();
 
-class HttpException extends Error {
-  status: number;
-  message: string;
-  constructor(status: number, message: string) {
-    super(message);
-    this.status = status;
-    this.message = message;
-  }
-}
-
-const callback = (status : number, message : string) => {
-  let e : HttpException = new HttpException(status,message);
-  throw e;
-}
-
-let service = new Service(callback);
+let service = new Service();
 
 router.get(
   '/orderedTxsForAddress/:address',
-  async (req : express.Request, res : express.Response) => {
+  async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     var { address } = req.params;
-    var result = await service.orderedTransactions(address);
-    res.send(result);
+    await service.orderedTransactions(address)
+      .then((result) => res.send(result))
+      .catch((err) => next(err))
   }
 )
 
 router.get(
   '/TxsForAddress/:address',
-  async (req : express.Request, res : express.Response) => {
+  async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     var { address } = req.params;
-    var result = await service.allTransactions(address);
-    res.send(result);
+    await service.allTransactions(address)
+      .then((result) => res.send(result))
+      .catch((err) => next(err))
   }
 )
 
 router.get(
   '/TxsByValue',
-  async (req : express.Request, res : express.Response) => {
-    var result = await service.transactionsByValue();
-    res.send(result);
+  async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    await service.transactionsByValue()
+      .then((result) => res.send(result))
+      .catch((err) => next(err))
   }
 )
 
 router.get(
   '/first100ByBalance',
-  async (req : express.Request, res : express.Response) => {
-    var result = await service.first100ByBalance();
-    res.send(result);
+  async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    await service.first100ByBalance()
+      .then((result) => res.send(result))
+      .catch((err) => next(err))
   }
 )
 
-module.exports = router;
+export default router;

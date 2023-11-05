@@ -1,10 +1,10 @@
-const express = require('express')
-const routes = require('./routes');
-var bodyParser = require('body-parser')
+import express from 'express';
+import routes from './routes';
+import bodyParser from 'body-parser';
 
 const app = express()
 
-const PORT = process.env.PORT || 80;
+const PORT = process.env.PORT || 8080;
 
 app.use(bodyParser.json());
 app.use('/api',routes);

@@ -1,12 +1,17 @@
 import { getTransactions } from "./indexer";
 import { getAvaxBalance } from "./json_rpc";
 
-class service {
-    callback: Function;
-
-    constructor(callback: Function){
-        this.callback = callback;
+class HttpException extends Error {
+    status: number;
+    message: string;
+    constructor(status: number, message: string) {
+      super(message);
+      this.status = status;
+      this.message = message;
     }
+  }
+
+export default class service {
 
     orderedTransactions = async (address : string) => {
         let txs = await getTransactions();
@@ -16,10 +21,10 @@ class service {
             if (match.length > 0) {
                 return match.sort(tx => tx.blockNumber && tx.transactionIndex);
             } else {
-                this.callback(404, 'No tx found for given address');
+                throw new HttpException(404, 'No tx found for given address');
             }
         } catch (e) {
-            this.callback(500, (e as Error).message);
+            throw new HttpException(500, (e as Error).message);
         }
     }
 
@@ -31,10 +36,10 @@ class service {
             if (match.length > 0) {
                 return match;
             } else {
-                this.callback(404, 'No tx found for given address');
+                throw new HttpException(404, 'No tx found for given address');
             }
         } catch (e) {
-            this.callback(500, (e as Error).message);
+            throw new HttpException(500, (e as Error).message);
         }
     }
 
@@ -44,7 +49,7 @@ class service {
         try {
             return txs.sort(tx => tx.value).reverse();
         } catch (e) {
-            this.callback(500, (e as Error).message);
+            throw new HttpException(500, (e as Error).message);
         }
     }
 
@@ -61,7 +66,7 @@ class service {
             }
         });
         var result : { address: string, balance: number }[] = [];
-        await Promise.all(accounts.map(async(address) => {
+        Promise.all(accounts.map(async(address) => {
             let obj = {
                 address : address,
                 balance : await getAvaxBalance(address)
@@ -72,10 +77,8 @@ class service {
         try {
             return result.sort(x => x.balance).slice(-100).reverse();
         } catch (e) {
-            this.callback(500, (e as Error).message);
+            throw new HttpException(500, (e as Error).message);
         }
     }
     
 }
-
-module.exports = service;
